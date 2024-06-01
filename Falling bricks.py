@@ -49,11 +49,14 @@ new_game_countdown_start_time = 0
 new_game_countdown_duration = 5  # Время в секундах до начала новой игры
 clock = pygame.time.Clock()
 
+
 def draw_point():
     pygame.draw.circle(window, point_color, (int(point_x), int(point_y)), point_radius)
 
+
 def draw_wall(x, y):
     pygame.draw.rect(window, wall_color, (x, y, wall_width, wall_gap))
+
 
 # рисуем коллизию для точки
 def is_collision():
@@ -62,11 +65,13 @@ def is_collision():
             return True
     return False
 
+
 # запуск таймера новой игры
 def start_new_game_countdown():
     global new_game_countdown, new_game_countdown_start_time
     new_game_countdown = True
     new_game_countdown_start_time = time.time()
+
 
 while running:
     window.blit(background_image, (0, 0))  # Отрисовка фонового изображения
@@ -80,7 +85,8 @@ while running:
 
         countdown = new_game_countdown_duration - int(time.time() - new_game_countdown_start_time)
         if countdown > 0:
-            countdown_surface = text_font.render("Новая игра через " + str(countdown) + "  секунд", True, (0, 0, 0), (255, 255, 255))
+            countdown_surface = text_font.render("Новая игра через " + str(countdown) + "  секунд", True, (0, 0, 0),
+                                                 (255, 255, 255))
         else:
             countdown_surface = text_font.render("Новая игра!", True, (0, 0, 0), (255, 255, 255))
             new_game_countdown = False
