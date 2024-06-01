@@ -13,13 +13,15 @@ pygame.display.set_caption("FALLING BRICKS")
 
 # Цвета
 point_color = (255, 0, 0)
-wall_color = (139, 69, 19)
 
 # Загрузка ассетов
 pygame.mixer.init()  # Инициализация микшера
 level_up_sound = pygame.mixer.Sound('level_up.wav')  # Загрузка звука
 background_image = pygame.image.load('background.jpg')  # Загрузка фонового изображения
 background_image = pygame.transform.scale(background_image, (400, 600))  # Изменение размера изображения
+
+# Загрузка текстуры стены
+wall_texture = pygame.image.load('wall.png')
 
 # Настройки игры
 point_radius = 10
@@ -55,7 +57,7 @@ def draw_point():
 
 
 def draw_wall(x, y):
-    pygame.draw.rect(window, wall_color, (x, y, wall_width, wall_gap))
+    window.blit(wall_texture, (x, y), (0, 0, wall_width, wall_gap))
 
 
 # рисуем коллизию для точки
@@ -132,7 +134,6 @@ while running:
 
         if wall_y > window_height:
             wall_y = -wall_gap
-
             wall_x = random.randint(0, window_width - wall_width)
             score += 1
 
