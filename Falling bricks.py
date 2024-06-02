@@ -11,13 +11,16 @@ window_height = 600
 window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("FALLING BRICKS")
 
-# Цвета
-point_color = (255, 0, 0)
+point_color = (255, 0, 0)  # цвет точки
 
 # Загрузка ассетов
 pygame.mixer.init()  # Инициализация микшера
-level_up_sound = pygame.mixer.Sound('level_up.wav')  # Загрузка звука
+speed_sound = pygame.mixer.Sound('level_up.wav')  # Загрузка звука
+score_sound = pygame.mixer.Sound('score.wav')
+
 background_image = pygame.image.load('background.jpg')  # Загрузка фонового изображения
+red_background = pygame.Surface((window_width, window_height))  # Создание красного фона
+red_background.fill((255, 0, 0))  # Красный экран
 background_image = pygame.transform.scale(background_image, (400, 600))  # Изменение размера изображения
 
 # Загрузка текстуры стены
@@ -50,6 +53,7 @@ new_game_countdown = False
 new_game_countdown_start_time = 0
 new_game_countdown_duration = 5  # Время в секундах до начала новой игры
 clock = pygame.time.Clock()
+game_over = False  # Переменная для отслеживания состояния проигрыша
 
 
 def draw_point():
@@ -70,33 +74,36 @@ def is_collision():
 
 # запуск таймера новой игры
 def start_new_game_countdown():
-    global new_game_countdown, new_game_countdown_start_time
+    global new_game_countdown, new_game_countdown_start_time, game_over
     new_game_countdown = True
     new_game_countdown_start_time = time.time()
+    game_over = True  # Пометить, что игра завершилась
 
 
 while running:
-    window.blit(background_image, (0, 0))  # Отрисовка фонового изображения
 
     if new_game_countdown:
-        # Обработка возможности закрытия окна
+        window.blit(red_background, (0, 0))  # Красный фон при проигрыше
+
+        # Обработка событий для возможности закрытия окна
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
+        # Отображение сообщения и отсчета времени
         text_font = pygame.font.Font(None, 40)
-        text_font1 = pygame.font.Font(None, 40)
-        score_text = text_font1.render(f"Вы набрали: {str(score)} очков", True, (0, 0, 0), (255, 255, 255))
+        text_font1 = pygame.font.Font(None, 50)
+        score_text = text_font1.render(f"Ваш счёт: {str(score)}", True, (255, 255, 255))
         score_text_rect = score_text.get_rect(center=(window_width // 2, 50))
         window.blit(score_text, score_text_rect)
 
         countdown = new_game_countdown_duration - int(time.time() - new_game_countdown_start_time)
         if countdown > 0:
-            countdown_surface = text_font.render("Новая игра через " + str(countdown) + "  секунд", True, (0, 0, 0),
-                                                 (255, 255, 255))
+            countdown_surface = text_font.render("Новая игра через " + str(countdown) + " секунд", True, (255, 255, 255))
         else:
-            countdown_surface = text_font.render("Новая игра!", True, (0, 0, 0), (255, 255, 255))
+            countdown_surface = text_font.render("", True, (255, 255, 255))
             new_game_countdown = False
+            game_over = False  # Сброс состояния проигрыша
             # Сброс всех значений
             point_x = window_width // 2
             point_y = window_height - 50
@@ -111,6 +118,8 @@ while running:
         pygame.display.flip()
 
     else:
+        window.blit(background_image, (0, 0))  # Оригинальный фон при новой игре
+
         # Обработка событий
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -141,10 +150,11 @@ while running:
             wall_y = -wall_gap
             wall_x = random.randint(0, window_width - wall_width)
             score += 1
+            score_sound.play()  # звук кирпичей
 
             if score % 10 == 0:  # Увеличиваем скорость игры каждые 10 очков
                 game_speed += 0.5
-                level_up_sound.play()
+                speed_sound.play()  # увеличение скорости
 
         # Проверка столкновения
         if is_collision():
