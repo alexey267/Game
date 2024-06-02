@@ -18,6 +18,7 @@ pygame.mixer.init()  # Инициализация микшера
 speed_sound = pygame.mixer.Sound('level_up.wav')  # Загрузка звука
 score_sound = pygame.mixer.Sound('score.wav')
 new_score = pygame.mixer.Sound('new_score.wav')
+
 background_image = pygame.image.load('background.jpg')  # Загрузка фонового изображения
 red_background = pygame.Surface((window_width, window_height))  # Создание красного фона
 red_background.fill((255, 0, 0))  # Красный экран
@@ -111,7 +112,7 @@ while running:
         countdown = new_game_countdown_duration - int(time.time() - new_game_countdown_start_time)
         if countdown > 0:
             countdown_surface = text_font.render("Новая игра через", True, (255, 255, 255))
-            countdown_time_surface = text_font.render(f"{str(countdown)} секунд(-ы)", True, (255, 255, 255))
+            countdown_time_surface = text_font.render(f"{str(countdown)} секунд", True, (255, 255, 255))
         else:
             countdown_surface = text_font.render("Новая игра!", True, (255, 255, 255))
             countdown_time_surface = None
