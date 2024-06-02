@@ -79,6 +79,11 @@ while running:
     window.blit(background_image, (0, 0))  # Отрисовка фонового изображения
 
     if new_game_countdown:
+        # Обработка возможности закрытия окна
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
         text_font = pygame.font.Font(None, 40)
         text_font1 = pygame.font.Font(None, 40)
         score_text = text_font1.render(f"Вы набрали: {str(score)} очков", True, (0, 0, 0), (255, 255, 255))
