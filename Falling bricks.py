@@ -17,7 +17,7 @@ point_color = (255, 0, 0)  # цвет точки
 pygame.mixer.init()  # Инициализация микшера
 speed_sound = pygame.mixer.Sound('level_up.wav')  # Загрузка звука
 score_sound = pygame.mixer.Sound('score.wav')
-
+new_score = pygame.mixer.Sound('new_score.wav')
 background_image = pygame.image.load('background.jpg')  # Загрузка фонового изображения
 red_background = pygame.Surface((window_width, window_height))  # Создание красного фона
 red_background.fill((255, 0, 0))  # Красный экран
@@ -45,6 +45,7 @@ wall_velocity = wall_speed
 
 # Счетчик пройденных стен и скорость игры
 score = 0
+high_score = 0  # Рекорд
 game_speed = 1
 
 # Главный игровой цикл
@@ -74,7 +75,13 @@ def is_collision():
 
 # запуск таймера новой игры
 def start_new_game_countdown():
-    global new_game_countdown, new_game_countdown_start_time, game_over
+    global new_game_countdown, new_game_countdown_start_time, game_over, high_score
+
+    # Проверка и обновление рекорда
+    if score > high_score:
+        high_score = score
+        new_score.play()
+
     new_game_countdown = True
     new_game_countdown_start_time = time.time()
     game_over = True  # Пометить, что игра завершилась
@@ -97,11 +104,17 @@ while running:
         score_text_rect = score_text.get_rect(center=(window_width // 2, 50))
         window.blit(score_text, score_text_rect)
 
+        high_score_text = text_font.render(f"Последний рекорд: {str(high_score)}", True, (255, 255, 255))
+        high_score_text_rect = high_score_text.get_rect(center=(window_width // 2, 100))
+        window.blit(high_score_text, high_score_text_rect)
+
         countdown = new_game_countdown_duration - int(time.time() - new_game_countdown_start_time)
         if countdown > 0:
-            countdown_surface = text_font.render("Новая игра через " + str(countdown) + " секунд", True, (255, 255, 255))
+            countdown_surface = text_font.render("Новая игра через", True, (255, 255, 255))
+            countdown_time_surface = text_font.render(f"{str(countdown)} секунд(-ы)", True, (255, 255, 255))
         else:
-            countdown_surface = text_font.render("", True, (255, 255, 255))
+            countdown_surface = text_font.render("Новая игра!", True, (255, 255, 255))
+            countdown_time_surface = None
             new_game_countdown = False
             game_over = False  # Сброс состояния проигрыша
             # Сброс всех значений
@@ -113,8 +126,13 @@ while running:
             score = 0
             game_speed = 1
 
-        countdown_rect = countdown_surface.get_rect(center=(window_width // 2, window_height // 2 + 50))
+        countdown_rect = countdown_surface.get_rect(center=(window_width // 2, window_height // 2))
         window.blit(countdown_surface, countdown_rect)
+
+        if countdown_time_surface:
+            countdown_time_rect = countdown_time_surface.get_rect(center=(window_width // 2, window_height // 2 + 40))
+            window.blit(countdown_time_surface, countdown_time_rect)
+
         pygame.display.flip()
 
     else:
